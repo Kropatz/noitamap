@@ -136,6 +136,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   document.addEventListener('keydown', copyCoordinates, { capture: false });
 
+  //TODO: add toggle to ignore updates, so you can manually zoom the map again
+  const socket = new WebSocket("ws://localhost:25568")
+  socket.onmessage = (event) => {
+    let split = event.data.split(";");
+    let x = parseInt(split[0]);
+    let y = parseInt(split[1]);
+    let zoom = parseInt(split[2]);
+    let map = split[3];
+    if (!x || !y || !zoom || !map) {
+      return;
+    }
+    zoom = Math.pow(2, zoom / -100);
+    app.osd.setMap(asMapName(map), { x, y, zoom });
+    app.osd.setZoomPos({ x, y, zoom });
+  };
+
   initSpellSelector();
 
   // Uncomment and implement annotations if needed
